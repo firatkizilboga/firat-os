@@ -61,7 +61,15 @@ int printf(const char* restrict format, ...) {
 			if (!print(str, len))
 				return -1;
 			written += len;
-		} else {
+		} else if(*format == 'd'){
+			format++;
+			int d = va_arg(parameters, int);
+			char str[12];
+			itoa(d, str, 10);
+			size_t len = strlen(str);
+			printf(str);
+		}
+		else {
 			format = format_begun_at;
 			size_t len = strlen(format);
 			if (maxrem < len) {
@@ -72,7 +80,7 @@ int printf(const char* restrict format, ...) {
 				return -1;
 			written += len;
 			format += len;
-		}
+		}	
 	}
 
 	va_end(parameters);
