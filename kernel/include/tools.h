@@ -5,18 +5,6 @@
 #include <stddef.h> // For size_t
 #include <stdbool.h> // For boolean types
 
-// Structure representing a GDT entry
-struct GDT;
-
-// Function to encode a GDT entry
-void encodeGdtEntry(uint8_t *target, struct GDT source);
-
-// Function to disable interrupts
-void disableInterrupts();
-
-// Function to enable interrupts
-void enableInterrupts();
-
 enum vga_color {
     VGA_COLOR_BLACK = 0,
     VGA_COLOR_BLUE = 1,

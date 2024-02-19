@@ -1,0 +1,2 @@
+void enableInterrupts();
+void disableInterrupts();
