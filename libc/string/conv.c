@@ -21,6 +21,11 @@ int atoi (char * str)
 
 int itoa (int i, char * buf, int base) 
 {
+    if (i<0){
+        i = -i;
+        *buf++ = '-';
+    }
+
     int j = 0;
     int k = 0;
     char temp[100];

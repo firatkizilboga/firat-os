@@ -21,12 +21,13 @@ typedef struct {
 	bool is_blinking;
 } Cursor;
 
-Cursor terminal_cursor = {0, 2, true};
+Cursor terminal_cursor = {0, 2, false};
 
 Cursor * get_terminal_cursor()
 {
 	return &terminal_cursor;
 }
+
 void update_cursor(Cursor * c, size_t x, size_t y)
 {
 	//set start y from 2s to 25
@@ -53,12 +54,13 @@ void update_cursor(Cursor * c, size_t x, size_t y)
 		outb(0x3D4, 0x0E);
 		outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
 	}
+	disable_cursor();
 }
 
 void write_char(char c, uint8_t color, Cursor * cursor)
 {
 	uint16_t pos = cursor->y * VGA_WIDTH + cursor->x;
-	
+
 	if (c != '\n')
 	{
 		terminal_buffer[pos] = vga_entry(c, color);
@@ -88,6 +90,9 @@ void terminal_initialize(void)
 	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 	terminal_buffer = (uint16_t*) 0xB8000;
     
+	Cursor * cursor = get_terminal_cursor();
+	update_cursor(cursor, 0, 2);
+	
 	for (size_t y = 0; y < VGA_HEIGHT; y++) {
 		for (size_t x = 0; x < VGA_WIDTH; x++) {
 			const size_t index = y * VGA_WIDTH + x;
@@ -111,4 +116,10 @@ void terminal_clear(Cursor * cursor)
 		}
 	}
 	update_cursor(cursor, 0, 2);
+}
+
+void disable_cursor()
+{
+	outb(0x3D4, 0x0A);
+	outb(0x3D5, 0x20);
 }
