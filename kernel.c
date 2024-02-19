@@ -23,6 +23,6 @@ void kernel_main(void)
 {
     terminal_initialize();
 	write_string("Firat OS\n", vga_entry_color(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK) , get_terminal_cursor());
-	printf("Hello, kernel World!\n");
+	printf("Hello, kernel World %d!\n", 3);
 }
 
