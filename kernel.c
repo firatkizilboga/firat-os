@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "kernel/include/tools.h"
 #include "kernel/include/terminal.h"
+#include "kernel/include/gdt.h"
 #include <stdio.h>
 
 
@@ -22,10 +23,13 @@
 void kernel_main(void) 
 {
     terminal_initialize();
+	i686_GDT_Initialize();
+	
 	write_string("Firat OS\n", vga_entry_color(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK) , get_terminal_cursor());
 	printf("Hello, kernel World %d!\n", -999);
 	printf("Hello, kernel World %d!\n", 55 + 2);
 	printf("Hello, kernel World %d!\n", 32 * 2);
 	printf("Hello, kernel World %d!\n", 2 + 2);
+	printf("add two numbers %d!\n", add_two(2, 2));
 }
 

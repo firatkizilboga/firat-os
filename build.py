@@ -2,6 +2,8 @@ import glob
 import json
 import os
 
+BUILD_DIR = "build/"
+
 def discover_libs():
     libraries = []
     # Discover all files in the current directory that contain an info.json file
@@ -39,28 +41,22 @@ def main():
     
     #prinr pwd
     print(os.getcwd())
+    object_files = []
 
     for lib in priority_build_order:
-        build_lib(lib)
+        objs = build_lib(lib)
+        object_files.extend(objs)
 
     
     #get includes for all the libraries
     includes = ""
     for lib in priority_build_order:
         includes += get_include_string(lib)
-    lib_object_files = []
-    for lib in priority_build_order:
-        c_files = glob.glob(lib + "/*/*.c")
-        for c_file in c_files:
-            obj_file = c_file.replace(".c", ".o")
-            lib_object_files.append(obj_file)
+    
         
     os.system("i686-elf-gcc -c kernel.c -o kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra" + includes)
-
-    # Link the kernel with the library executables
-    object_files_str = " ".join(lib_object_files)
-    print("i686-elf-gcc -T linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib kernel.o " + includes)
-
+    object_files_str = " ".join(object_files)
+    print("i686-elf-gcc -T linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib boot.o kernel.o " + object_files_str)
     os.system("i686-elf-gcc -T linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib boot.o kernel.o " + object_files_str)
 
 def get_include_string(lib):
@@ -71,18 +67,30 @@ def get_include_string(lib):
     includes += " -I" + lib + "/include"
     return includes
 
+def get_file_name(path):
+    return path.split("/")[-1]
+
 def build_lib(lib):
-    dependencies = get_dependencies(lib)
     print("Building " + lib)
-
-    #discover all the .c files in the library
     c_files = glob.glob(lib + "/*/*.c")
+    asm_files = glob.glob(lib + "/*/*.s")
 
-    includes =get_include_string(lib)
+    includes = get_include_string(lib)
+
+    obj_names = []
+
 
     for c_file in c_files:
         print("Building " + c_file)
-        os.system("i686-elf-gcc -c " + c_file + " -o " +  c_file.replace(".c", ".o") + " -std=gnu99 -ffreestanding -O2 -Wall -Wextra" + includes)
+        os.system("i686-elf-gcc -c " + c_file + " -o " +  BUILD_DIR +get_file_name(c_file).replace(".c", ".o") + " -std=gnu99 -ffreestanding -O2 -Wall -Wextra" + includes)
+        obj_names.append(BUILD_DIR + get_file_name(c_file).replace(".c", ".o"))
+
+    for asm_file in asm_files:
+        print("Building " + asm_file)
+        os.system("nasm -f elf32 " + asm_file + " -o " + BUILD_DIR +get_file_name(asm_file).replace(".s", ".o"))
+        obj_names.append(BUILD_DIR + get_file_name(asm_file).replace(".s", ".o"))
+    
+    return obj_names
 if __name__ == "__main__":
     main()
 
