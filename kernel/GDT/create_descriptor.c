@@ -1,7 +1,8 @@
 // Used for creating GDT segment descriptors in 64-bit integer form.
+#ifndef GDT_H
+#define GDT_H 1
 #include <stdint.h>
 #include <stddef.h>
-#include <../include/interrupts.h>
  
 // Each define here is for a specific flag in the descriptor.
 // Refer to the intel documentation for a description of what each one does.
@@ -72,7 +73,7 @@ struct gdtr {
 } __attribute__((packed));
 
 void setGdt(uint16_t limit, uint32_t base) {
-    disableInterrupts();
+    __asm__ __volatile__("cli");
     struct gdtr gdt_descriptor;
 
     // Inline assembly to set up the GDT
@@ -86,7 +87,7 @@ void setGdt(uint16_t limit, uint32_t base) {
         : "m"(limit), "m"(gdt_descriptor.limit), "m"(base), "m"(gdt_descriptor.base), "r"(&gdt_descriptor)
         : "eax", "ax"
     );
-    enableInterrupts();
-
+    __asm__ __volatile__("sti");
 }
 
+#endif

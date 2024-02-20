@@ -55,11 +55,16 @@ def main():
             obj_file = c_file.replace(".c", ".o")
             lib_object_files.append(obj_file)
         
-    os.system("i686-elf-gcc -c kernel.c -o kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra" + includes)
+    os.system("i686-elf-gcc -c kernel.c -o kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra" + includes)    
 
-    # Link the kernel with the library executables
+    #find .asm files in this directory recursively and subdirectories
+    asm_files = glob.glob("*.asm", recursive=True)
+    for asm_file in asm_files:
+        os.system("nasm -f elf32 " + asm_file + " -o " + asm_file.replace(".asm", ".o"))
+        lib_object_files.append(asm_file.replace(".asm", ".o"))
+    
+
     object_files_str = " ".join(lib_object_files)
-    print("i686-elf-gcc -T linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib kernel.o " + includes)
 
     os.system("i686-elf-gcc -T linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib boot.o kernel.o " + object_files_str)
 
