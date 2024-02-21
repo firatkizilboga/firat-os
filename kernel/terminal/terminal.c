@@ -6,7 +6,7 @@
 #include <string.h>
 #include "keyboard.h"
 #include "keypress.h"
-
+void terminalKeyboardCallback(KeyStroke ks);
 
 /* Hardware text mode color constants. */ 
 size_t terminal_row;
@@ -98,16 +98,8 @@ void terminal_initialize(void)
 	terminal_column = 0;
 	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 	terminal_buffer = (uint16_t*) 0xB8000;
-    
-	Cursor * cursor = get_terminal_cursor();
-	update_cursor(cursor, 0, 2);
-	
-	for (size_t y = 0; y < VGA_HEIGHT; y++) {
-		for (size_t x = 0; x < VGA_WIDTH; x++) {
-			const size_t index = y * VGA_WIDTH + x;
-			terminal_buffer[index] = vga_entry(' ', terminal_color);
-		}
-	}
+	setKeyboardCallback(&terminalKeyboardCallback);
+	render_terminal();
 }
 
  
@@ -143,20 +135,23 @@ void clearBuffers()
 {
 	data_buffer_index = 0;
 	input_buffer_index = 0;
-	memset(input_buffer, 0, 256);
+	memset(input_buffer, '\0', 256);
 	for (int i = 0; i < 20; i++)
 	{
-		memset(data_buffer[i], 0, 256);
+		memset(data_buffer[i], '\0', 256);
 	}
 }
 
 void terminalKeyboardCallback(KeyStroke ks){
 	if (ks.keyReleased)
 		return;
+	
 	if (ks.ascii != NULL){
 		input_buffer[input_buffer_index] = ks.ascii;
 		input_buffer_index++;
 	}
+
+
 	if (ks.ascii == '\n'){
 		input_buffer[input_buffer_index] = '\0';
 		input_buffer_index = 0;
@@ -171,20 +166,21 @@ void terminalKeyboardCallback(KeyStroke ks){
 
 		if (input_buffer[0] == 'c')
 		{
-			clearBuffers();
 			render_terminal(); 
+			clearBuffers();
 		}
 
 		if (input_buffer[0] == 'q')
 		{
 			terminal_clear(&terminal_cursor);
-			clearBuffers();
 			keypress();
+			clearBuffers();
 		}
-		
-		memcpy(data_buffer[data_buffer_index], input_buffer, 256);
-		memset(input_buffer, '\0', 256);
-		data_buffer_index++;
+		else{
+			memcpy(data_buffer[data_buffer_index], input_buffer, 256);
+			memset(input_buffer, '\0', 256);
+			data_buffer_index++;
+		}
 	}
 
 	if (ks.scanCode == (uint16_t) 14){
@@ -213,8 +209,7 @@ render_terminal(){
 
 void terminal(){
 	//write \0 to data_buffer and input_buffer
-	setKeyboardCallback(&terminalKeyboardCallback);
-	
+	terminal_initialize();
 
 	while (1)
 	{
@@ -222,6 +217,8 @@ void terminal(){
 		{
 		}
 		render_terminal();
+		setKeyboardCallback(&terminalKeyboardCallback);
+
 	}
 }
 

@@ -15,9 +15,7 @@ char buffer[2] = {0, 0};
 int bufferIndex = 0;
 bool killSignal = false;
 
-void keypressKeyboardCallback(
-    KeyStroke ks
-){
+void keypressKeyboardCallback(KeyStroke ks){
     incomingKey = ks;
 
     if(ks.ascii != NULL){
@@ -28,9 +26,7 @@ void keypressKeyboardCallback(
 
     if (ks.ascii == '.'){
         killSignal = true;
-    } 
-
-    render();
+    }
 }
 
 initialize_program(){  
@@ -40,7 +36,6 @@ initialize_program(){
     killSignal = false;
     setKeyboardCallback(&keypressKeyboardCallback);
     c = get_terminal_cursor();
-    render();
 }
 
 render(){
@@ -62,9 +57,13 @@ render(){
 
 void keypress(){
     initialize_program();
-    printf("waiting for keypress\n");
 
     while(!killSignal){
-
+        render();
+        for (size_t i = 0; i < 10000000; i++)
+        {
+            /* code */
+        }
+        
     }
 }

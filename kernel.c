@@ -49,8 +49,5 @@ void kernel_main(void)
 
 	disable_timer_interrupt();
 	initKeyboard();
-    terminal_initialize();
-	
 	terminal();
-
 }
