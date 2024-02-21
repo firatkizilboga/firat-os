@@ -40,52 +40,17 @@ void disable_timer_interrupt() {
 #define PIC1_COMMAND 0x20
 
 
-void safe_handler(){
-	disableInterrupts();
-	enableInterrupts();
-}
-
-
-void safe_handler2(){
-	disableInterrupts();
-	printf("Safe handler2\n");
-	enableInterrupts();
-}
-void safe_interrupts() {
-	for (int i = 0; i < 256; i++)
-	{
-		i686_IDT_SetGate(i, safe_handler2, 0x08, IDT_FLAG_GATE_32BIT_INT | IDT_FLAG_PRESENT);
-	}
-	
-	
-}
 
 void kernel_main(void) 
 {
 	i686_GDT_Initialize();
 	i686_IDT_Initialize();
 	enableInterrupts();
-	safe_interrupts();
 
 	disable_timer_interrupt();
-    terminal_initialize();
-
 	initKeyboard();
+    terminal_initialize();
 	
-	write_string("Firat OS\n", vga_entry_color(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK) , get_terminal_cursor());
-	printf("Hello, kernel World %d\n", -999);
-	printf("Hello, kernel World %d\n", 55 + 2);
-	printf("Hello, kernel World %d\n", 32 * 2);
-	printf("Hello, kernel World %d\n", 2 + 2);
-
-
-	initKeyboard();	
-
-	while (1)
-	{
-		for (int i = 0; i < 256000000; i++)
-		{
-		}
-		
-	}
+	terminal();
+	while (1){}
 }

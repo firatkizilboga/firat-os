@@ -8,6 +8,7 @@
         "stdio.h": "c",
         "util.h": "c",
         "keyboard.h": "c",
-        "idt.h": "c"
+        "idt.h": "c",
+        "string.h": "c"
     }
 }

@@ -69,6 +69,12 @@ UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN
 };
 
 
+void (*keyboardCallback)(KeyStroke);
+void setKeyboardCallback(void (*callback)(KeyStroke)) {
+    keyboardCallback = callback;
+}
+
+
 void keyboardHandler() {
     disableInterrupts();
 
@@ -77,6 +83,7 @@ void keyboardHandler() {
     scanCode &= 0x7F; // Extract the scan code
 
     // Debugging information
+    char keyToPrint = NULL;
 
     switch (scanCode) {
         // Handling special keys like function keys, control, alt, etc.
@@ -96,10 +103,8 @@ void keyboardHandler() {
 
         default:
             if (!keyReleased) {
-                char keyToPrint = capsOn || capsLock ? uppercase[scanCode] : lowercase[scanCode];
-                if (keyToPrint != UNKNOWN) {
-                    printf("%c", keyToPrint);
-                } else {
+                keyToPrint = capsOn || capsLock ? uppercase[scanCode] : lowercase[scanCode];
+                if (keyToPrint != UNKNOWN) {} else {
 
                 }
             }
@@ -107,12 +112,20 @@ void keyboardHandler() {
 
     outb(0x20, PIC1_COMMAND);
     enableInterrupts();
+    KeyStroke keyStroke = {scanCode, keyReleased, keyToPrint};
+    keyboardCallback(keyStroke);
+    return;
 }
 
+void basicKeyboardCallback(KeyStroke keyStroke) {
+    return;
+}
 
 void initKeyboard(){
     capsOn = false;
     capsLock = false;
 	i686_IDT_SetGate(8, keyboardHandler, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
 	i686_IDT_SetGate(9, keyboardHandler, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
+    setKeyboardCallback(basicKeyboardCallback);
 }
+

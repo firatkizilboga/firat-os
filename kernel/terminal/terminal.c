@@ -1,7 +1,10 @@
+#pragma once
 #include <stddef.h>
 #include <stdint.h>
-#include "../include/tools.h"
+#include "tools.h"
 #include <stdbool.h>
+#include <string.h>
+#include "keyboard.h"
 
 /* Hardware text mode color constants. */ 
 size_t terminal_row;
@@ -128,3 +131,88 @@ void disable_cursor()
 	outb(0x3D4, 0x0A);
 	outb(0x3D5, 0x20);
 }
+
+
+char input_buffer[256];
+char data_buffer[20][256];
+int data_buffer_index = 0;
+int input_buffer_index = 0;
+
+void terminalKeyboardCallback(KeyStroke ks){
+	if (ks.keyReleased)
+		return;
+	
+	input_buffer[input_buffer_index] = ks.ascii;
+	input_buffer_index++;
+	if (ks.ascii == '\n'){
+		input_buffer[input_buffer_index] = '\0';
+		input_buffer_index = 0;
+		if (data_buffer_index >= 20)
+		{
+			for (int i = 0; i < 20; i++)
+			{
+				memcpy(data_buffer[i], data_buffer[i + 1], 256);
+			}
+			data_buffer_index = 20;
+		}
+		if (input_buffer[0] == 'c')
+		{
+			data_buffer_index = 0;
+			input_buffer_index = 0;
+			memset(input_buffer, 0, 256);
+			for (int i = 0; i < 20; i++)
+			{
+				memset(data_buffer[i], 0, 256);
+			}render_terminal(); return;
+
+		}
+		memcpy(data_buffer[data_buffer_index], input_buffer, 256);
+		memset(input_buffer, '\0', 256);
+		data_buffer_index++;
+	}
+
+	if (ks.scanCode == 0xFFFFFFFF - 1){
+		if (terminal_cursor.x > 0)
+		{
+			input_buffer[input_buffer_index] = '\0';
+			input_buffer_index--;
+		}
+	}
+	render_terminal();
+};
+render_terminal(){
+	terminal_clear(&terminal_cursor);
+
+	for (int i = 0; i < 20; i++)
+	{
+		if (data_buffer[i][0] == '\0')
+			break;
+		
+		write_string(data_buffer[i], terminal_color, &terminal_cursor);
+	}
+
+	update_cursor(&terminal_cursor, 0, 24);
+	write_string("prompt> ", terminal_color, &terminal_cursor);
+	write_string(input_buffer, terminal_color, &terminal_cursor);
+
+}
+
+void terminal(){
+	setKeyboardCallback(&terminalKeyboardCallback);
+	//write \0 to data_buffer and input_buffer
+	memset(input_buffer, 0, 256);
+	for (int i = 0; i < 20; i++)
+	{
+		memset(data_buffer[i], 0, 256);
+	}
+
+	while (1)
+	{
+		for (size_t i = 0; i < 100000000; i++)
+		{
+		}
+		render_terminal();
+	}
+}
+
+
