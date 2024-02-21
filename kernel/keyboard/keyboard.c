@@ -3,7 +3,9 @@
 #include "keyboard.h"
 #include "idt.h"
 #include "terminal.h"
-
+#include "stdio.h"
+#define PIC1_COMMAND 0x20
+#define KEYBOARD_DATA_PORT    0x60
 
 bool capsOn;
 bool capsLock;
@@ -67,58 +69,50 @@ UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN
 };
 
 
+void keyboardHandler() {
+    disableInterrupts();
 
-void keyboardHandler(){
-    printf("Keyboard Handler\n");
-    char scanCode = inb(0x60) & 0x7F; //What key is pressed
-    char press = inb(0x60) & 0x80; //Press down, or released
+    uint8_t scanCode = inb(KEYBOARD_DATA_PORT);
+    bool keyReleased = scanCode & 0x80; // Check if the key is released
+    scanCode &= 0x7F; // Extract the scan code
 
-    switch(scanCode){
-        case 1:
-        case 29:
-        case 56:
-        case 59:
-        case 60:
-        case 61:
-        case 62:
-        case 63:
-        case 64:
-        case 65:
-        case 66:
-        case 67:
-        case 68:
-        case 87:
-        case 88:
+    // Debugging information
+
+    switch (scanCode) {
+        // Handling special keys like function keys, control, alt, etc.
+        case ESC ... ALTGR: // Using range in switch-case for compactness
             break;
-        case 42:
-            //shift key
-            if (press == 0){
-                capsOn = true;
-            }else{
-                capsOn = false;
-            }
+
+        case LSHFT:
+        case RSHFT:
+            capsOn = !keyReleased;
             break;
+
         case 58:
-            if (!capsLock && press == 0){
-                capsLock = true;
-            }else if (capsLock && press == 0){
-                capsLock = false;
+            if (!keyReleased) {
+                capsLock = !capsLock;
             }
             break;
+
         default:
-            if (press == 0){
-                if (capsOn || capsLock){
-                    printf("%c", uppercase[scanCode]);
-                }else{
-                    printf("%c", lowercase[scanCode]);
+            if (!keyReleased) {
+                char keyToPrint = capsOn || capsLock ? uppercase[scanCode] : lowercase[scanCode];
+                if (keyToPrint != UNKNOWN) {
+                    printf("%c", keyToPrint);
+                } else {
+
                 }
             }
-            
     }
+
+    outb(0x20, PIC1_COMMAND);
+    enableInterrupts();
 }
+
 
 void initKeyboard(){
     capsOn = false;
     capsLock = false;
-    i686_IDT_SetGate(1, keyboardHandler, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
+	i686_IDT_SetGate(8, keyboardHandler, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
+	i686_IDT_SetGate(9, keyboardHandler, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
 }

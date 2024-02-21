@@ -68,7 +68,13 @@ int printf(const char* restrict format, ...) {
 			itoa(d, str, 10);
 			size_t len = strlen(str);
 			printf(str);
+		} else if (*format == 'b')
+		{
+			format++;
+			bool b = va_arg(parameters, bool);
+			b ? printf("true") : printf("false");
 		}
+		
 		else {
 			format = format_begun_at;
 			size_t len = strlen(format);

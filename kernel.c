@@ -36,18 +36,28 @@ void disable_timer_interrupt() {
 
 #define DATA_PORT 0x60
 #define ACK 0xFA
-#define PIC1_COMMAND 0x20
 #define KEYBOARD_DATA_PORT 0x60
+#define PIC1_COMMAND 0x20
 
-void handler() {
-    disableInterrupts();
 
-	char scan_code = inb(KEYBOARD_DATA_PORT);
+void safe_handler(){
+	disableInterrupts();
+	enableInterrupts();
+}
 
-	// You can process the scan code here
-	printf("Keyboard Interrupt: %d\n", scan_code);
-	outb(0x20, PIC1_COMMAND);
-    enableInterrupts();
+
+void safe_handler2(){
+	disableInterrupts();
+	printf("Safe handler2\n");
+	enableInterrupts();
+}
+void safe_interrupts() {
+	for (int i = 0; i < 256; i++)
+	{
+		i686_IDT_SetGate(i, safe_handler2, 0x08, IDT_FLAG_GATE_32BIT_INT | IDT_FLAG_PRESENT);
+	}
+	
+	
 }
 
 void kernel_main(void) 
@@ -55,9 +65,12 @@ void kernel_main(void)
 	i686_GDT_Initialize();
 	i686_IDT_Initialize();
 	enableInterrupts();
+	safe_interrupts();
 
 	disable_timer_interrupt();
     terminal_initialize();
+
+	initKeyboard();
 	
 	write_string("Firat OS\n", vga_entry_color(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK) , get_terminal_cursor());
 	printf("Hello, kernel World %d\n", -999);
@@ -66,18 +79,13 @@ void kernel_main(void)
 	printf("Hello, kernel World %d\n", 2 + 2);
 
 
-	i686_IDT_SetGate(8, handler, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
-	i686_IDT_SetGate(9, handler, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
-	
+	initKeyboard();	
 
 	while (1)
 	{
 		for (int i = 0; i < 256000000; i++)
 		{
 		}
-		printf("cycle\n");
-		enableInterrupts();
-
 		
 	}
 }

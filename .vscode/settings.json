@@ -7,6 +7,7 @@
         "terminal.h": "c",
         "stdio.h": "c",
         "util.h": "c",
-        "keyboard.h": "c"
+        "keyboard.h": "c",
+        "idt.h": "c"
     }
 }
