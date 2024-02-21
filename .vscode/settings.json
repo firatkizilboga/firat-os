@@ -5,6 +5,8 @@
         "stdint.h": "c",
         "stddef.h": "c",
         "terminal.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "util.h": "c",
+        "keyboard.h": "c"
     }
 }

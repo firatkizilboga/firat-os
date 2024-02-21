@@ -10,9 +10,14 @@ uint8_t terminal_color;
 uint16_t* terminal_buffer;
 
 
-void outb(uint16_t port, uint8_t val)
-{
-    __asm__ volatile ( "outb %b0, %w1" : : "a"(val), "Nd"(port) : "memory");
+void outb(uint16_t Port, uint8_t Value){
+	asm volatile ("outb %1, %0" : : "dN" (Port),"a" (Value));
+}
+
+char inb(uint16_t port){
+	char rv;
+	asm volatile("inb %1, %0": "=a" (rv): "dN" (port));
+	return rv;
 }
 
 typedef struct {

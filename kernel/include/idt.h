@@ -22,3 +22,4 @@ void i686_IDT_Initialize();
 void i686_IDT_DisableGate(int interrupt);
 void i686_IDT_EnableGate(int interrupt);
 void i686_IDT_SetGate(int interrupt, void* base, uint16_t segmentDescriptor, uint8_t flags);
+void irq_install_handler(int irq, void* handler);

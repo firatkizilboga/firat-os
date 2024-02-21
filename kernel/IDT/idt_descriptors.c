@@ -49,6 +49,12 @@ void i686_IDT_Initialize()
     i686_IDT_Load(&g_IDTDescriptor);
 }
 
+
+void irq_install_handler(int irq, void* handler)
+{
+    i686_IDT_SetGate(irq, handler, 0x08, IDT_FLAG_GATE_32BIT_INT | IDT_FLAG_PRESENT);
+}
+
 __attribute__((noreturn))
 void exception_handler(void);
 void exception_handler() {
