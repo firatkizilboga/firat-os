@@ -10,62 +10,67 @@
 bool capsOn;
 bool capsLock;
 
-const uint32_t UNKNOWN = 0xFFFFFFFF;
-const uint32_t ESC = 0xFFFFFFFF - 1;
-const uint32_t CTRL = 0xFFFFFFFF - 2;
-const uint32_t LSHFT = 0xFFFFFFFF - 3;
-const uint32_t RSHFT = 0xFFFFFFFF - 4;
-const uint32_t ALT = 0xFFFFFFFF - 5;
-const uint32_t F1 = 0xFFFFFFFF - 6;
-const uint32_t F2 = 0xFFFFFFFF - 7;
-const uint32_t F3 = 0xFFFFFFFF - 8;
-const uint32_t F4 = 0xFFFFFFFF - 9;
-const uint32_t F5 = 0xFFFFFFFF - 10;
-const uint32_t F6 = 0xFFFFFFFF - 11;
-const uint32_t F7 = 0xFFFFFFFF - 12;
-const uint32_t F8 = 0xFFFFFFFF - 13;
-const uint32_t F9 = 0xFFFFFFFF - 14;
-const uint32_t F10 = 0xFFFFFFFF - 15;
-const uint32_t F11 = 0xFFFFFFFF - 16;
-const uint32_t F12 = 0xFFFFFFFF - 17;
-const uint32_t SCRLCK = 0xFFFFFFFF - 18;
-const uint32_t HOME = 0xFFFFFFFF - 19;
-const uint32_t UP = 0xFFFFFFFF - 20;
-const uint32_t LEFT = 0xFFFFFFFF - 21;
-const uint32_t RIGHT = 0xFFFFFFFF - 22;
-const uint32_t DOWN = 0xFFFFFFFF - 23;
-const uint32_t PGUP = 0xFFFFFFFF - 24;
-const uint32_t PGDOWN = 0xFFFFFFFF - 25;
-const uint32_t END = 0xFFFFFFFF - 26;
-const uint32_t INS = 0xFFFFFFFF - 27;
-const uint32_t DEL = 0xFFFFFFFF - 28;
-const uint32_t CAPS = 0xFFFFFFFF - 29;
-const uint32_t NONE = 0xFFFFFFFF - 30;
-const uint32_t ALTGR = 0xFFFFFFFF - 31;
-const uint32_t NUMLCK = 0xFFFFFFFF - 32;
-
+typedef enum {
+    KEY_UNKNOWN = 0xFFFFFFFF,
+    KEY_BACKSPACE = 14,
+    KEY_ESC = 1,
+    KEY_TAB = 15,
+    KEY_CAPS = 58,
+    KEY_CTRL = 29,
+    KEY_LSHFT = 42,
+    KEY_RSHFT = 54,
+    KEY_ALT = 56,
+    KEY_WIN = 91,
+    KEY_WIN2 = 92,
+    KEY_F1 = 59,
+    KEY_F2 = 60,
+    KEY_F3 = 61,
+    KEY_F4 = 62,
+    KEY_F5 = 63,
+    KEY_F6 = 64,
+    KEY_F7 = 65,
+    KEY_F8 = 66,
+    KEY_F9 = 67,
+    KEY_F10 = 68,
+    KEY_F11 = 69,
+    KEY_F12 = 88,
+    KEY_SCRLCK = 18,
+    KEY_HOME = 19,
+    KEY_UP = 72,
+    KEY_LEFT = 75,
+    KEY_RIGHT = 77,
+    KEY_DOWN = 80,
+    KEY_PGUP = 24,
+    KEY_PGDOWN = 25,
+    KEY_END = 26,
+    KEY_INS = 27,
+    KEY_DEL = 28,
+    KEY_NONE = 30,
+    KEY_ALTGR = 31,
+    KEY_NUMLCK = 32
+} KeyCode;
 
 const uint32_t lowercase[128] = {
-UNKNOWN,ESC,'1','2','3','4','5','6','7','8',
-'9','0','-','=','\b','\t','q','w','e','r',
-'t','y','u','i','o','p','[',']','\n',CTRL,
+NULL,NULL,'1','2','3','4','5','6','7','8',
+'9','0','-','=',NULL,'\t','q','w','e','r',
+'t','y','u','i','o','p','[',']','\n',NULL,
 'a','s','d','f','g','h','j','k','l',';',
-'\'','`',LSHFT,'\\','z','x','c','v','b','n','m',',',
-'.','/',RSHFT,'*',ALT,' ',CAPS,F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,NUMLCK,SCRLCK,HOME,UP,PGUP,'-',LEFT,UNKNOWN,RIGHT,
-'+',END,DOWN,PGDOWN,INS,DEL,UNKNOWN,UNKNOWN,UNKNOWN,F11,F12,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,
-UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,
-UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,
-UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN
+'\'','`',NULL,'\\','z','x','c','v','b','n','m',',',
+'.','/',NULL,'*',NULL,' ',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'-',NULL,NULL,NULL,
+'+',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+NULL,NULL,NULL,NULL,NULL
 };
 
 const uint32_t uppercase[128] = {
-    UNKNOWN,ESC,'!','@','#','$','%','^','&','*','(',')','_','+','\b','\t','Q','W','E','R',
-'T','Y','U','I','O','P','{','}','\n',CTRL,'A','S','D','F','G','H','J','K','L',':','"','~',LSHFT,'|','Z','X','C',
-'V','B','N','M','<','>','?',RSHFT,'*',ALT,' ',CAPS,F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,NUMLCK,SCRLCK,HOME,UP,PGUP,'-',
-LEFT,UNKNOWN,RIGHT,'+',END,DOWN,PGDOWN,INS,DEL,UNKNOWN,UNKNOWN,UNKNOWN,F11,F12,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,
-UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,
-UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,
-UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN
+    NULL,NULL,'!','@','#','$','%','^','&','*','(',')','_','+',NULL,'\t','Q','W','E','R',
+'T','Y','U','I','O','P','{','}','\n',NULL,'A','S','D','F','G','H','J','K','L',':','"','~',NULL,'|','Z','X','C',
+'V','B','N','M','<','>','?',NULL,'*',NULL,' ',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'-',
+NULL,NULL,NULL,'+',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+NULL,NULL,NULL,NULL,NULL,NULL,NULL
 };
 
 
@@ -84,18 +89,15 @@ void keyboardHandler() {
 
     // Debugging information
     char keyToPrint = NULL;
-
-    switch (scanCode) {
-        // Handling special keys like function keys, control, alt, etc.
-        case ESC ... ALTGR: // Using range in switch-case for compactness
-            break;
-
-        case LSHFT:
-        case RSHFT:
+    
+    KeyCode keyCode = (KeyCode)scanCode;
+    switch (keyCode) {
+        case KEY_LSHFT:
+        case KEY_RSHFT:
             capsOn = !keyReleased;
             break;
 
-        case 58:
+        case KEY_CAPS:
             if (!keyReleased) {
                 capsLock = !capsLock;
             }
@@ -104,8 +106,11 @@ void keyboardHandler() {
         default:
             if (!keyReleased) {
                 keyToPrint = capsOn || capsLock ? uppercase[scanCode] : lowercase[scanCode];
-                if (keyToPrint != UNKNOWN) {} else {
-
+                if (keyToPrint){
+                    keyToPrint = keyToPrint;
+                }
+                else {
+                    keyToPrint = NULL;
                 }
             }
     }
@@ -118,7 +123,6 @@ void keyboardHandler() {
 }
 
 void basicKeyboardCallback(KeyStroke keyStroke) {
-    return;
 }
 
 void initKeyboard(){

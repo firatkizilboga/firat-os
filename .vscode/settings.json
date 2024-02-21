@@ -9,6 +9,7 @@
         "util.h": "c",
         "keyboard.h": "c",
         "idt.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "cstring": "c"
     }
 }

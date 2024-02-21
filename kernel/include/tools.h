@@ -1,5 +1,5 @@
-#ifndef GDT_H
-#define GDT_H
+#ifndef tools_H
+#define tools_H 1
 
 #include <stdint.h> // For standard integer types
 #include <stddef.h> // For size_t

@@ -5,13 +5,14 @@
 #include <stdbool.h>
 #include <string.h>
 #include "keyboard.h"
+#include "keypress.h"
+
 
 /* Hardware text mode color constants. */ 
 size_t terminal_row;
 size_t terminal_column;
 uint8_t terminal_color;
 uint16_t* terminal_buffer;
-
 
 void outb(uint16_t Port, uint8_t Value){
 	asm volatile ("outb %1, %0" : : "dN" (Port),"a" (Value));
@@ -138,12 +139,24 @@ char data_buffer[20][256];
 int data_buffer_index = 0;
 int input_buffer_index = 0;
 
+void clearBuffers()
+{
+	data_buffer_index = 0;
+	input_buffer_index = 0;
+	memset(input_buffer, 0, 256);
+	for (int i = 0; i < 20; i++)
+	{
+		memset(data_buffer[i], 0, 256);
+	}
+}
+
 void terminalKeyboardCallback(KeyStroke ks){
 	if (ks.keyReleased)
 		return;
-	
-	input_buffer[input_buffer_index] = ks.ascii;
-	input_buffer_index++;
+	if (ks.ascii != NULL){
+		input_buffer[input_buffer_index] = ks.ascii;
+		input_buffer_index++;
+	}
 	if (ks.ascii == '\n'){
 		input_buffer[input_buffer_index] = '\0';
 		input_buffer_index = 0;
@@ -155,34 +168,36 @@ void terminalKeyboardCallback(KeyStroke ks){
 			}
 			data_buffer_index = 20;
 		}
+
 		if (input_buffer[0] == 'c')
 		{
-			data_buffer_index = 0;
-			input_buffer_index = 0;
-			memset(input_buffer, 0, 256);
-			for (int i = 0; i < 20; i++)
-			{
-				memset(data_buffer[i], 0, 256);
-			}render_terminal(); return;
-
+			clearBuffers();
+			render_terminal(); 
 		}
+
+		if (input_buffer[0] == 'q')
+		{
+			terminal_clear(&terminal_cursor);
+			clearBuffers();
+			keypress();
+		}
+		
 		memcpy(data_buffer[data_buffer_index], input_buffer, 256);
 		memset(input_buffer, '\0', 256);
 		data_buffer_index++;
 	}
 
-	if (ks.scanCode == 0xFFFFFFFF - 1){
-		if (terminal_cursor.x > 0)
+	if (ks.scanCode == (uint16_t) 14){
+		if (input_buffer_index > 0)
 		{
-			input_buffer[input_buffer_index] = '\0';
 			input_buffer_index--;
+			input_buffer[input_buffer_index] = '\0';
 		}
 	}
-	render_terminal();
 };
+
 render_terminal(){
 	terminal_clear(&terminal_cursor);
-
 	for (int i = 0; i < 20; i++)
 	{
 		if (data_buffer[i][0] == '\0')
@@ -194,21 +209,16 @@ render_terminal(){
 	update_cursor(&terminal_cursor, 0, 24);
 	write_string("prompt> ", terminal_color, &terminal_cursor);
 	write_string(input_buffer, terminal_color, &terminal_cursor);
-
 }
 
 void terminal(){
-	setKeyboardCallback(&terminalKeyboardCallback);
 	//write \0 to data_buffer and input_buffer
-	memset(input_buffer, 0, 256);
-	for (int i = 0; i < 20; i++)
-	{
-		memset(data_buffer[i], 0, 256);
-	}
+	setKeyboardCallback(&terminalKeyboardCallback);
+	
 
 	while (1)
 	{
-		for (size_t i = 0; i < 100000000; i++)
+		for (size_t i = 0; i < 1000000; i++)
 		{
 		}
 		render_terminal();
