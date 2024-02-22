@@ -38,7 +38,7 @@ void kernel_main(void)
 	i686_GDT_Initialize();
 	i686_IDT_Initialize();
 	enableInterrupts();
-
+    disableAllInterruptGates();
 	disable_timer_interrupt();
 	initKeyboard();
 	terminal();
