@@ -1,11 +1,12 @@
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
-#include "tools.h"
+#include "video.h"
 #include <stdbool.h>
 #include <string.h>
 #include "keyboard.h"
 #include "keypress.h"
+
 void terminalKeyboardCallback(KeyStroke ks);
 
 /* Hardware text mode color constants. */ 

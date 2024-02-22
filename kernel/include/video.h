@@ -1,9 +1,14 @@
-#ifndef tools_H
-#define tools_H 1
+#pragma once
+#ifndef video_H
+#define video_H 1
+#define VGA_WIDTH 80
+#define VGA_HEIGHT 25
+
 
 #include <stdint.h> // For standard integer types
 #include <stddef.h> // For size_t
 #include <stdbool.h> // For boolean types
+
 
 enum vga_color {
     VGA_COLOR_BLACK = 0,
@@ -26,10 +31,13 @@ enum vga_color {
 
 uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg);
 uint16_t vga_entry(unsigned char uc, uint8_t color);
-static const size_t VGA_WIDTH = 80;
-static const size_t VGA_HEIGHT = 25;
 
-bool is_protected_mode();
+typedef struct {
+    char buffer[VGA_HEIGHT][VGA_WIDTH];
+} VGATextFrame;
 
-#endif // GDT_H
+void * requestVideoOut();
+void setFrameBuffer(VGATextFrame frame);
 
+
+#endif 

@@ -1,5 +1,0 @@
-{
-    "boot": "boot.s",
-    "linker": "linker.ld",
-    "kernel": "kernel.c"
-}

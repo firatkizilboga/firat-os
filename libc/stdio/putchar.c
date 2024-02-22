@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <../../kernel/include/terminal.h>
-#include <../../kernel/include/tools.h>
+#include <../../kernel/include/video.h>
 #if defined(__is_libk)
 #include <kernel/tt.h>
 #endif

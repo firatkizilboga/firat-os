@@ -1,3 +1,4 @@
+#pragma once
 #include "idt.h"
 #include <stdint.h>
 #define FLAG_SET(x, flag) x |= (flag)

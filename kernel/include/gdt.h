@@ -4,5 +4,4 @@
 #define i686_GDT_DATA_SEGMENT 0x10
 
 void i686_GDT_Initialize();
-extern int add_two(int a, int b);
 

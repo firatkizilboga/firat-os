@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "tools.h"
+#include "video.h"
 #include "terminal.h"
 #include "gdt.h"
 #include "idt.h"

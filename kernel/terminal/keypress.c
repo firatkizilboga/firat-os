@@ -4,7 +4,7 @@
 #include "stdbool.h"
 #include "keyboard.h"
 #include "terminal.h"
-#include "tools.h"
+#include "video.h"
 #include "stdio.h"
 #include "string.h"
 
@@ -16,13 +16,14 @@ int bufferIndex = 0;
 bool killSignal = false;
 
 void keypressKeyboardCallback(KeyStroke ks){
+    clear_midsection();
     incomingKey = ks;
 
     if(bufferIndex > 1 || bufferIndex < 0){
         bufferIndex = 0;
     }
     
-    if(ks.ascii != NULL){
+    if(ks.ascii != NULL && ks.keyCode != KEY_ENTER){
         buffer[bufferIndex] = ks.ascii;
         bufferIndex = (bufferIndex + 1) % 2;
     }
@@ -31,6 +32,13 @@ void keypressKeyboardCallback(KeyStroke ks){
         killSignal = true;
     }
     render();
+}
+
+void clear_midsection(){
+    for (int i = 0; i < VGA_HEIGHT; i++)
+    {
+        printf("\n");
+    }
 }
 
 initialize_program(){  

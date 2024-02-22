@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 
 int is_protected_mode() {

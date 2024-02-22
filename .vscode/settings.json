@@ -11,6 +11,10 @@
         "idt.h": "c",
         "string.h": "c",
         "cstring": "c",
-        "__config": "c"
+        "__config": "c",
+        "interrupts.h": "c"
+    },
+    "code-runner.executorMap": {
+        "shellscript": "./kill_qemu_and_make.sh"
     }
 }
