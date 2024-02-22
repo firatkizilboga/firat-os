@@ -92,15 +92,7 @@ void write_string(const char * str, uint8_t color, Cursor * cursor)
 		write_char(str[i], color, cursor);
 }
 
-void terminal_initialize(void) 
-{
-	terminal_row = 0;
-	terminal_column = 0;
-	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-	terminal_buffer = (uint16_t*) 0xB8000;
-	setKeyboardCallback(&terminalKeyboardCallback);
-	render_terminal();
-}
+
 
  
 void terminal_setcolor(uint8_t color) 
@@ -131,15 +123,23 @@ char data_buffer[20][256];
 int data_buffer_index = 0;
 int input_buffer_index = 0;
 
-void clearBuffers()
-{
-	data_buffer_index = 0;
-	input_buffer_index = 0;
+void clearInputBuffer(){
 	memset(input_buffer, '\0', 256);
+	input_buffer_index = 0;
+}
+
+void clearDataBuffer(){
+	data_buffer_index = 0;
 	for (int i = 0; i < 20; i++)
 	{
-		memset(data_buffer[i], '\0', 256);
+		memset(data_buffer[i], 0, 256);
 	}
+}
+
+void clearBuffers()
+{
+	clearInputBuffer();
+	clearDataBuffer();	
 }
 
 void terminalKeyboardCallback(KeyStroke ks){
@@ -150,7 +150,6 @@ void terminalKeyboardCallback(KeyStroke ks){
 		input_buffer[input_buffer_index] = ks.ascii;
 		input_buffer_index++;
 	}
-
 
 	if (ks.ascii == '\n'){
 		input_buffer[input_buffer_index] = '\0';
@@ -166,34 +165,36 @@ void terminalKeyboardCallback(KeyStroke ks){
 
 		if (input_buffer[0] == 'c')
 		{
-			render_terminal(); 
 			clearBuffers();
-		}
-
-		if (input_buffer[0] == 'q')
+		} else if (input_buffer[0] == 'q')
 		{
 			terminal_clear(&terminal_cursor);
 			keypress();
-			clearBuffers();
+			clearInputBuffer();
 		}
-		else{
+		else if (strlen(input_buffer)>1){
 			memcpy(data_buffer[data_buffer_index], input_buffer, 256);
-			memset(input_buffer, '\0', 256);
+			clearInputBuffer();
 			data_buffer_index++;
 		}
 	}
 
-	if (ks.scanCode == (uint16_t) 14){
+	else if (ks.scanCode == (uint16_t) 14){
 		if (input_buffer_index > 0)
 		{
 			input_buffer_index--;
 			input_buffer[input_buffer_index] = '\0';
 		}
 	}
+
+	render_terminal();
 };
 
 render_terminal(){
 	terminal_clear(&terminal_cursor);
+	setKeyboardCallback(&terminalKeyboardCallback);
+
+	
 	for (int i = 0; i < 20; i++)
 	{
 		if (data_buffer[i][0] == '\0')
@@ -201,24 +202,28 @@ render_terminal(){
 		
 		write_string(data_buffer[i], terminal_color, &terminal_cursor);
 	}
-
 	update_cursor(&terminal_cursor, 0, 24);
 	write_string("prompt> ", terminal_color, &terminal_cursor);
 	write_string(input_buffer, terminal_color, &terminal_cursor);
 }
 
+void terminal_initialize(void) 
+{
+	terminal_row = 0;
+	terminal_column = 0;
+	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+	terminal_buffer = (uint16_t*) 0xB8000;
+	input_buffer_index = 0;
+	data_buffer_index = 0;
+	clearBuffers();
+	render_terminal();
+}
 void terminal(){
 	//write \0 to data_buffer and input_buffer
 	terminal_initialize();
-
 	while (1)
 	{
-		for (size_t i = 0; i < 1000000; i++)
-		{
-		}
-		render_terminal();
-		setKeyboardCallback(&terminalKeyboardCallback);
-
+		
 	}
 }
 
