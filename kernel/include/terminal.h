@@ -1,5 +1,5 @@
 #ifndef TERMINAL_H
-#define TERMINAL_H
+#define TERMINAL_H 1
 
 #include <stdint.h> // For standard integer types
 #include <stddef.h> // For size_t
@@ -17,5 +17,6 @@ void write_string(const char * str, uint8_t color, Cursor * cursor);
 void terminal_initialize(void);
 void terminal_clear(Cursor* cursor);
 Cursor * get_terminal_cursor();
-
+char inb(uint16_t port);
+void outb(uint16_t port, uint8_t data);
 #endif // TERMINAL_H
