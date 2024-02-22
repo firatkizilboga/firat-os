@@ -1,5 +1,8 @@
-#include <stdint.h>
-#include <stddef.h>
+#pragma once
 
-uint64_t create_descriptor(uint32_t base, uint32_t limit, uint16_t flag);
-void setGdt(uint16_t limit, uint32_t base);
+#define i686_GDT_CODE_SEGMENT 0x08
+#define i686_GDT_DATA_SEGMENT 0x10
+
+void i686_GDT_Initialize();
+extern int add_two(int a, int b);
+
