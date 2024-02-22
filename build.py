@@ -20,7 +20,7 @@ def main():
     #delete all .o and .bin files in the current directory and all subdirectories
     os.system("find . -name '*.o' -type f -delete")
     os.system("find . -name '*.bin' -type f -delete")
-    os.system("i686-elf-as boot.s -o boot.o")
+    os.system("i686-elf-as boot.s -o build/boot.o")
     build_order = []
 
     with open('build.json') as build_file:
@@ -54,10 +54,9 @@ def main():
         includes += get_include_string(lib)
     
         
-    os.system("i686-elf-gcc -c kernel.c -o kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra" + includes)
+    os.system("i686-elf-gcc -c kernel.c -o build/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra" + includes)
     object_files_str = " ".join(object_files)
-    print("i686-elf-gcc -T linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib boot.o kernel.o " + object_files_str)
-    os.system("i686-elf-gcc -T linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib boot.o kernel.o " + object_files_str)
+    os.system("i686-elf-gcc -T linker.ld -o build/kernel.bin -ffreestanding -O2 -nostdlib build/boot.o build/kernel.o " + object_files_str)
 
 def get_include_string(lib):
     dependencies = get_dependencies(lib)
