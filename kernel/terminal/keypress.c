@@ -5,7 +5,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-static void render();
 static void setup();
 static VGATextFrame frame;
 static Cursor cursor;
@@ -34,43 +33,43 @@ static void render(){
     update_cursor(&cursor, 13, 12);
     printf("ASCII");
     update_cursor(&cursor, 13, 13);
-    printf("%c",keyStroke.ascii);
+    printf("%c\n",keyStroke.ascii);
 
-    update_cursor(&cursor, 30, 12);
+    update_cursor(&cursor, 26, 12);
     printf("Key Code");
-    update_cursor(&cursor, 30, 13);
-    printf("%d",keyStroke.keyCode);
+    update_cursor(&cursor, 26, 13);
+    printf("%d   ",keyStroke.keyCode);
 
     update_cursor(&cursor, 45, 12);
     printf("Key Release\n");
     update_cursor(&cursor, 45, 13);
-    printf("%d",keyStroke.keyReleased);
+    printf("%d   ",keyStroke.keyReleased);
 
     update_cursor(&cursor, 60, 12);
     printf("Scan Code");
     update_cursor(&cursor, 60, 13);
-    printf("%d",keyStroke.scanCode);
+    printf("%d   ",keyStroke.scanCode);
 
     update_cursor(&cursor, 0, VGA_HEIGHT-1);
-    printf("command: %s (to quit please type \"./\")", buffer);
+    printf("command: %s (ESC to quit (or key with KeyCode = 1) kill signall: %d\n", buffer, killSignal);
     
     videoInterruptHandler();
 }
+
 
 static void keyboardCallback(KeyStroke ks){
     if (ks.keyReleased) return;
     keyStroke = ks;
     if(ks.ascii != NULL) {
         buffer[bufferIndex] = ks.ascii;
-        bufferIndex = (bufferIndex + 1) % 2;
+        bufferIndex = bufferIndex ? 0 : 1;
     }
-    if(buffer[0] == '.' && buffer[1] == 'q') killSignal = true;
+    if(ks.keyCode == KEY_ESC) {killSignal = true; return;}
     render();
 }
 
 void keypress(){
     frameFill(&frame,VGA_COLOR_BLACK,VGA_COLOR_GREEN);
-    
     bufferIndex = 0;
     buffer[0] = 0;
     buffer[1] = 0;
@@ -80,13 +79,9 @@ void keypress(){
     frameFill(&frame, VGA_COLOR_BLACK, VGA_COLOR_GREEN);
     update_cursor(&cursor, 0,2);
     requestVideoOut(&frame,&cursor);
-
-    while (!killSignal){
-        for (int i = 0; i < 100000; i++)
-        {
-            /* code */
-        }
-        
-        render();
-    }
+    render();
+    while (!killSignal)
+    {}
+    
+    return;
 }
