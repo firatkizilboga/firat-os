@@ -9,17 +9,20 @@
 #include "keypress.h"
 #include "utils.h"
 #include "terminal.h"
+#include "editor.h"
 
-static void terminalKeyboardCallback(KeyStroke ks);
+static void keyboardCallback(KeyStroke ks);
 Cursor terminal_cursor = {0, 2, false};
 static VGATextFrame frame;
 
 void terminal_clear()
 {
+	terminal_cursor.x = VGA_WIDTH/2;
+	terminal_cursor.y = VGA_HEIGHT/2;
+	printf("LALALALA");
 	terminal_cursor.x = 0;
 	terminal_cursor.y = 2;
 	terminal_cursor.is_blinking = false;
-
 	frameFill(&frame, VGA_COLOR_BLACK, VGA_COLOR_WHITE);
 };
 
@@ -47,7 +50,9 @@ void clearBuffers()
 	clearDataBuffer();	
 }
 
-void terminalKeyboardCallback(KeyStroke ks){
+static void keyboardCallback(KeyStroke ks){
+	
+
 	if (ks.keyReleased)
 		return;
 	
@@ -73,9 +78,7 @@ void terminalKeyboardCallback(KeyStroke ks){
 			clearBuffers();
 		} else if (input_buffer[0] == 'q')
 		{
-			terminal_clear();
 			keypress();
-			clearInputBuffer();
 		}
 		else if (strlen(input_buffer)>1){
 			memcpy(data_buffer[data_buffer_index], input_buffer, 256);
@@ -95,7 +98,7 @@ void terminalKeyboardCallback(KeyStroke ks){
 };
 
 render_terminal(){
-	setKeyboardCallback(&terminalKeyboardCallback);
+	setKeyboardCallback(&keyboardCallback);
 	requestVideoOut(&frame, &terminal_cursor);
 	frameFill(&frame, VGA_COLOR_BLACK,VGA_COLOR_GREEN);
 	update_cursor(&terminal_cursor, 0, 2);

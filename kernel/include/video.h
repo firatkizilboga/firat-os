@@ -47,9 +47,8 @@ typedef struct {
 	size_t y;
 	bool is_blinking;
 } Cursor;
+
 void requestVideoOut(VGATextFrame*, Cursor*);
-
-
 void write_char(char c, Cursor * cursor, VGATextFrame * frame);
 void write_string(char * str, Cursor * cursor, VGATextFrame * frame);
 void frameFill(VGATextFrame* frame, uint8_t background_color, uint8_t foreground_color);
@@ -57,4 +56,5 @@ void videoInterruptHandler();
 Cursor * getCurrentCursor();
 VGATextFrame * getCurrentFrame();
 void initVideo();
+void update_cursor(Cursor * c, int x, int y);
 #endif

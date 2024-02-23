@@ -3,8 +3,7 @@
 #include "stdbool.h"
 #include "keyboard.h"
 #include "idt.h"
-#include "terminal.h"
-#include "stdio.h"
+#include <stddef.h> 
 #define PIC1_COMMAND 0x20
 #define KEYBOARD_DATA_PORT    0x60
 
@@ -37,7 +36,7 @@ NULL,NULL,NULL,NULL,NULL,NULL,NULL
 };
 
 
-void (*keyboardCallback)(KeyStroke);
+static void (*keyboardCallback)(KeyStroke);
 void setKeyboardCallback(void (*callback)(KeyStroke)) {
     keyboardCallback = callback;
 }
@@ -77,7 +76,6 @@ void keyboardHandler() {
                 }
             }
     }
-
     outb(0x20, PIC1_COMMAND);
     enableInterrupts();
     KeyStroke keyStroke = {scanCode, keyReleased, keyToPrint, keyCode};
@@ -96,5 +94,4 @@ void initKeyboard(){
     i686_IDT_EnableGate(9);
 	i686_IDT_SetGate(8, keyboardHandler, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
 	i686_IDT_SetGate(9, keyboardHandler, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
-    setKeyboardCallback(&basicKeyboardCallback);
 }

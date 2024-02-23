@@ -15,7 +15,8 @@
         "interrupts.h": "c",
         "video.h": "c",
         "keypress.h": "c",
-        "utils.h": "c"
+        "utils.h": "c",
+        "editor.h": "c"
     },
     "code-runner.executorMap": {
         "shellscript": "./kill_qemu_and_make.sh"

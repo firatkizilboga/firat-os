@@ -2,6 +2,7 @@
 #include "video.h"
 #include "interrupts.h"
 #include <stdbool.h>
+#include <video.h>
 
 Cursor * current_cursor;
 VGATextFrame * current_frame;
@@ -24,6 +25,7 @@ void initVideo(){
 }
 
 void videoInterruptHandler(){
+    disableInterrupts();
     for (int i = 0; i < VGA_HEIGHT; i++)
     {
         for (int j = 0; j < VGA_WIDTH; j++)
@@ -31,6 +33,7 @@ void videoInterruptHandler(){
             displayPixel(current_frame->buffer[i][j], i,j);
         }
     }
+    enableInterrupts();
 }
 
 void displayPixel(Pixel p, int y, int x){
