@@ -1,3 +1,4 @@
+#pragma once
 #include <stdio.h>
 
 int puts(const char* string) {

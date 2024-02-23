@@ -5,4 +5,4 @@
 boot.o
 kernel.bin
 build/*
-.vscode
+./.vscode

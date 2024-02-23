@@ -3,29 +3,22 @@
 #include <stdint.h>
 #include "stdbool.h"
 #include "keyboard.h"
-#include "terminal.h"
 #include "video.h"
 #include "stdio.h"
 #include "string.h"
-
+#include "keypress.h"
 
 KeyStroke incomingKey;
-Cursor * c;
 char buffer[2] = {0, 0};
 int bufferIndex = 0;
 bool killSignal = false;
 
 void keypressKeyboardCallback(KeyStroke ks){
-    clear_midsection();
     incomingKey = ks;
-
-    if(bufferIndex > 1 || bufferIndex < 0){
-        bufferIndex = 0;
-    }
     
     if(ks.ascii != NULL && ks.keyCode != KEY_ENTER){
-        buffer[bufferIndex] = ks.ascii;
         bufferIndex = (bufferIndex + 1) % 2;
+        buffer[bufferIndex] = ks.ascii;
     }
 
     if (buffer[0] == '.' && buffer[1] == '/'){
@@ -34,41 +27,43 @@ void keypressKeyboardCallback(KeyStroke ks){
     render();
 }
 
-void clear_midsection(){
-    for (int i = 0; i < VGA_HEIGHT; i++)
-    {
-        printf("\n");
-    }
-}
+static VGATextFrame frame;
+Cursor keypressCursor;
+
 
 initialize_program(){  
+    frameFill(&frame, VGA_COLOR_DARK_GREY, VGA_COLOR_CYAN);
+    requestVideoOut(&frame, &keypressCursor);
     buffer[0] = 0;
     buffer[1] = 0;
     bufferIndex = 0;
     killSignal = false;
     setKeyboardCallback(&keypressKeyboardCallback);
-    c = get_terminal_cursor();
     render();
 }
 
 render(){
-    update_cursor(c, 0, 2);
-
-    write_string("Press a key\n", vga_entry_color(VGA_COLOR_BLACK, VGA_COLOR_GREEN), c);
+    update_cursor(&keypressCursor, 0, 2);
+    write_string("Press a key\n", &keypressCursor, &frame);
     printf("Key: %c\n", incomingKey.ascii);
     printf("Scan code: %d\n", incomingKey.scanCode);
     printf("Key released: %d\n", incomingKey.keyReleased);
+    printf("KILL: \n");
+    printf(killSignal ? "true": "false");
+    printf("\n %d",bufferIndex);
 
-    update_cursor(c, 0, 24);
-    write_string("command buffer: ", vga_entry_color(VGA_COLOR_BLACK, VGA_COLOR_WHITE), c);
-    write_string(buffer, vga_entry_color(VGA_COLOR_BLACK, VGA_COLOR_WHITE), c);
-    write_string("type \"./\" to quit.\n", vga_entry_color(VGA_COLOR_BLACK, VGA_COLOR_WHITE), c);
+    update_cursor(&keypressCursor, 0, 24);
+    write_string("command buffer: ", &keypressCursor, &frame);
+    write_string(buffer, &keypressCursor, &frame);
+    write_string("type \"./\" to quit.\n", &keypressCursor, &frame);
+    videoInterruptHandler();
+    
 }
-
 void keypress(){
     initialize_program();
 
     while(!killSignal){
+        for (size_t i = 0; i < 100; i++){}
         render();
     }
 }

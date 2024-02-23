@@ -1,3 +1,4 @@
+#pragma once
 #include "stdint.h"
 #include "stdbool.h"
 #include "keyboard.h"
@@ -9,6 +10,7 @@
 
 bool capsOn;
 bool capsLock;
+
 
 
 const uint32_t lowercase[128] = {
@@ -89,8 +91,10 @@ void basicKeyboardCallback(KeyStroke keyStroke) {
 void initKeyboard(){
     capsOn = false;
     capsLock = false;
+
+    i686_IDT_EnableGate(8);
+    i686_IDT_EnableGate(9);
 	i686_IDT_SetGate(8, keyboardHandler, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
 	i686_IDT_SetGate(9, keyboardHandler, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
-    setKeyboardCallback(basicKeyboardCallback);
+    setKeyboardCallback(&basicKeyboardCallback);
 }
-

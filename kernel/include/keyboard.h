@@ -1,5 +1,5 @@
 #pragma once
-
+#include<stdbool.h>
 #ifndef KEYBOARD_H
 #define KEYBOARD_H 1
 typedef enum {

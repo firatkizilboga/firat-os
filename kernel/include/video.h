@@ -1,14 +1,14 @@
-#pragma once
 #ifndef video_H
 #define video_H 1
+
+#pragma once
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
-
+#define VGA_HEIGHT_BASE 2
 
 #include <stdint.h> // For standard integer types
 #include <stddef.h> // For size_t
 #include <stdbool.h> // For boolean types
-
 
 enum vga_color {
     VGA_COLOR_BLACK = 0,
@@ -32,12 +32,29 @@ enum vga_color {
 uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg);
 uint16_t vga_entry(unsigned char uc, uint8_t color);
 
+typedef struct{
+    uint16_t background_color;
+    uint16_t foreground_color;
+    char ASCII;
+} Pixel;
+
 typedef struct {
-    char buffer[VGA_HEIGHT][VGA_WIDTH];
+    Pixel buffer[VGA_HEIGHT][VGA_WIDTH];
 } VGATextFrame;
 
-void * requestVideoOut();
-void setFrameBuffer(VGATextFrame frame);
+typedef struct {
+	size_t x;
+	size_t y;
+	bool is_blinking;
+} Cursor;
+void requestVideoOut(VGATextFrame*, Cursor*);
 
 
-#endif 
+void write_char(char c, Cursor * cursor, VGATextFrame * frame);
+void write_string(char * str, Cursor * cursor, VGATextFrame * frame);
+void frameFill(VGATextFrame* frame, uint8_t background_color, uint8_t foreground_color);
+void videoInterruptHandler();
+Cursor * getCurrentCursor();
+VGATextFrame * getCurrentFrame();
+void initVideo();
+#endif
