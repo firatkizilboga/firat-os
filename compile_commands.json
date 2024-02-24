@@ -1,0 +1,7 @@
+[
+    {
+        "directory": "/Users/firatkizilboga/projects/os/myos",
+        "command": "/usr/bin/gcc -I/Users/firatkizilboga/projects/os/myos/include -c /path/to/project/kernel.c",
+        "file": "/Users/firatkizilboga/projects/os/myos/kernel.c"
+    }
+]

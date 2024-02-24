@@ -26,33 +26,17 @@ def main():
     build_order = []
 
     libraries = discover_libs()
-
-    for lib in libraries:
-        build_order.append(lib)
-        build_order.extend(get_dependencies(lib))
-
-    #deduce order of build
-    priority_build_order = []
-    for lib in build_order:
-        if lib not in priority_build_order:
-            priority_build_order.append(lib)
-    
-    #prinr pwd
-    print(os.getcwd())
     object_files = []
 
-    for lib in priority_build_order:
+    for lib in libraries:
         objs = build_lib(lib)
         object_files.extend(objs)
 
-    
+
     #get includes for all the libraries
-    includes = ""
-    for lib in priority_build_order:
-        includes += get_include_string(lib)
-    
-        
-    os.system("i686-elf-gcc -c kernel.c -o build/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra" + includes)
+    includes = "./include"
+
+    os.system("i686-elf-gcc -c kernel.c -o build/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra -I" + includes)
     object_files_str = " ".join(object_files)
     os.system("i686-elf-gcc -T linker.ld -o build/kernel.bin -ffreestanding -O2 -nostdlib build/boot.o build/kernel.o " + object_files_str)
 
@@ -77,12 +61,9 @@ def find_files(directory, extensions):
 def build_lib(lib):
     files = find_files(lib, ["c", "s"])
 
-    
+
     c_files = files["c"]
     asm_files = files["s"]
-
-    includes = get_include_string(lib)
-
     obj_names = []
 
 
@@ -92,22 +73,20 @@ def build_lib(lib):
         name = identifier + get_file_name(c_file).replace(".c", ".o")
         build_location = BUILD_DIR + name
 
-        os.system("i686-elf-gcc -c " + c_file + " -o " +  build_location + " -std=gnu99 -ffreestanding -O2 -w -Wall -Wextra" + includes)
+        os.system("i686-elf-gcc -c " + c_file + " -o " +  build_location + " -std=gnu99 -ffreestanding -O2 -w -Wall -Wextra -I./include")
         obj_names.append(build_location)
 
     for asm_file in asm_files:
         print("Building " + asm_file)
         identifier = uuid.uuid4().hex
 
-        name = identifier+get_file_name(c_file).replace(".c", ".o")
+        name = identifier+get_file_name(asm_file).replace(".s", ".o")
         build_location = BUILD_DIR + name
         print("buil loc: ", build_location, name)
 
         os.system("nasm -f elf32 " + asm_file + " -o " + build_location)
         obj_names.append(build_location)
-    
+
     return obj_names
 if __name__ == "__main__":
     main()
-
-
