@@ -89,10 +89,7 @@ void initKeyboard() {
   capsOn = false;
   capsLock = false;
 
-  i686_IDT_EnableGate(8);
-  i686_IDT_EnableGate(9);
-  i686_IDT_SetGate(8, keyboardHandler, 0x08,
-                   IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
-  i686_IDT_SetGate(9, keyboardHandler, 0x08,
+  i686_IDT_EnableGate(0x21);
+  i686_IDT_SetGate(0x21, keyboardHandler, 0x08,
                    IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
 }

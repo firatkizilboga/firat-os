@@ -15,6 +15,11 @@ static void keyboardCallback(KeyStroke ks);
 Cursor terminal_cursor = {0, 2, false};
 static VGATextFrame frame;
 
+bool isProtectedMode() {
+    uint32_t cr0;
+    __asm__("mov %%cr0, %0" : "=r"(cr0));
+    return (cr0 & 0x1) != 0;
+}
 void terminal_clear()
 {
 	terminal_cursor.x = VGA_WIDTH/2;
@@ -108,7 +113,7 @@ render_terminal(){
 		write_string(data_buffer[i], &terminal_cursor, &frame);
 	}
 	update_cursor(&terminal_cursor, 0, 24);
-	write_string("prompt> ", &terminal_cursor, &frame);
+	write_string(isProtectedMode() ? "protected>" : "real> ", &terminal_cursor, &frame);
 	if (input_buffer_index)
 	{
 
