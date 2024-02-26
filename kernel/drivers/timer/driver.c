@@ -19,6 +19,7 @@ int getTicks(){
 
 static void onTimerInterrupt() {
     disableInterrupts();
+    ticks++;
     videoInterruptHandler();
     PIC_sendEOI(0);
     enableInterrupts();
@@ -32,20 +33,6 @@ int double_fault(){
     write_string("double fault!", c, f);
     enableInterrupts();
     return 1;
-}
-void unmaskIRQ(unsigned char IRQ) {
-    unsigned short port;
-    unsigned char value;
-
-    if (IRQ < 8) {
-        port = 0x21;
-    } else {
-        port = 0xA1;
-        IRQ -= 8;
-    }
-
-    value = inb(port) & ~(1 << IRQ);
-    outb(port, value);
 }
 
 void initTimer(){
@@ -63,5 +50,5 @@ void initTimer(){
     i686_IDT_SetGate(0x20, onTimerInterrupt, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
     i686_IDT_EnableGate(8);
     i686_IDT_SetGate(8, double_fault, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
-    unmaskIRQ(0);
+    unmaskIRQ(0);   
 }

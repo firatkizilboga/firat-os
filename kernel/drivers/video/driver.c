@@ -1,5 +1,4 @@
 #pragma once
-#include "interrupts.h"
 #include "video.h"
 #include <stdbool.h>
 

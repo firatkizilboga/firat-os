@@ -56,7 +56,6 @@ static void render(){
     videoInterruptHandler();
 }
 
-
 static void keyboardCallback(KeyStroke ks){
     if (ks.keyReleased) return;
     keyStroke = ks;

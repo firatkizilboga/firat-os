@@ -61,7 +61,6 @@ void i686_IDT_Initialize()
     initializePIC();
 }
 
-
 void outb(uint16_t port, uint8_t val) {
     __asm__("outb %0, %1" : : "a"(val), "Nd"(port));
 }
@@ -102,9 +101,52 @@ void PIC_sendEOI(unsigned char irq) {
 }
 
 void initializePIC() {
-    // Remap the PIC to avoid conflicts with CPU exceptions
-    // IRQ 0..15 will be remapped to INT 0x20..0x2F
     PIC_remap(0x20, 0x28);
+}
+
+void maskIRQ(unsigned char IRQ) {
+    unsigned short port;
+    unsigned char value;
+
+    if (IRQ < 8) {
+        port = 0x21;  // Master PIC IMR port
+    } else {
+        port = 0xA1;  // Slave PIC IMR port
+        IRQ -= 8;
+    }
+
+    value = inb(port) | (1 << IRQ);
+    outb(port, value);
+}
+
+void unmaskIRQ(unsigned char IRQ) {
+    unsigned short port;
+    unsigned char value;
+
+    if (IRQ < 8) {
+        port = 0x21;
+    } else {
+        port = 0xA1;
+        IRQ -= 8;
+    }
+
+    value = inb(port) & ~(1 << IRQ);
+    outb(port, value);
+}
+
+void enableInterrupts(){
+    __asm__ __volatile__("sti");
+}
+
+void disableInterrupts(){
+    __asm__ __volatile__("cli");
+}
+
+void disableAllInterruptGates(){
+    for (int i = 0; i < 256; i++)
+    {
+        i686_IDT_DisableGate(i);
+    }
 }
 
 __attribute__((noreturn))
@@ -112,3 +154,4 @@ void exception_handler(void);
 void exception_handler() {
     __asm__ volatile ("cli; hlt"); // Completely hangs the computer
 }
+

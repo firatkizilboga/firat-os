@@ -24,3 +24,7 @@ void i686_IDT_EnableGate(int interrupt);
 void i686_IDT_SetGate(int interrupt, void* base, uint16_t segmentDescriptor, uint8_t flags);
 void disableAllInterruptGates();
 void PIC_sendEOI(unsigned char irq);
+void enableInterrupts();
+void disableInterrupts();
+void maskIRQ(unsigned char IRQ);
+void PIC_remap(int offset1, int offset2);

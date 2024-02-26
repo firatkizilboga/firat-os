@@ -28,20 +28,6 @@ void disable_timer_interrupt() {
   outb(PIC1_DATA, mask);
 }
 
-void maskIRQ(unsigned char IRQ) {
-    unsigned short port;
-    unsigned char value;
-
-    if (IRQ < 8) {
-        port = 0x21;  // Master PIC IMR port
-    } else {
-        port = 0xA1;  // Slave PIC IMR port
-        IRQ -= 8;
-    }
-
-    value = inb(port) | (1 << IRQ);
-    outb(port, value);
-}
 
 
 void kernel_main(void) {

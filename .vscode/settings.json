@@ -12,7 +12,6 @@
         "string.h": "c",
         "cstring": "c",
         "__config": "c",
-        "interrupts.h": "c",
         "video.h": "c",
         "keypress.h": "c",
         "utils.h": "c",
