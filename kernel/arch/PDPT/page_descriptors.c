@@ -1,74 +1,31 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <pdpt.h>
-typedef struct {
-    uint32_t present   : 1;
-    uint32_t rw        : 1;
-    uint32_t user      : 1;
-    uint32_t pwt       : 1;
-    uint32_t pcd       : 1;
-    uint32_t accessed  : 1;
-    uint32_t dirty     : 1;
-    uint32_t ps        : 1;
-    uint32_t global    : 1;
-    uint32_t available : 3;
-    uint32_t addr      : 20;
-} PDE;
 
-typedef struct {
-    uint32_t present   : 1;
-    uint32_t rw        : 1;
-    uint32_t user      : 1;
-    uint32_t pwt       : 1;
-    uint32_t pcd       : 1;
-    uint32_t accessed  : 1;
-    uint32_t dirty     : 1;
-    uint32_t pat       : 1;
-    uint32_t global    : 1;
-    uint32_t available : 3;
-    uint32_t frame     : 20;
-} PTE;
+static uint32_t page_directory[1024] __attribute__((aligned(4096)));
+static uint32_t first_page_table[1024] __attribute__((aligned(4096)));
 
 
-static PDE create_pde() {
-    PDE pde = {0};
-    return pde;
-}
-
-// Function to set a PDE with specific values
-static void set_pde(PDE *pde, uint32_t addr, uint8_t present, uint8_t rw, uint8_t user) {
-    if (pde != NULL) {
-        pde->addr = addr >> 12;  // Assume address is page aligned
-        pde->present = present;
-        pde->rw = rw;
-        pde->user = user;
-        pde->ps = 0;
+void initPaging(){
+    for(int i = 0; i < 1024; i++){
+    // This sets the following flags to the pages:
+    //   Supervisor: Only kernel-mode can access them
+    //   Write Enabled: It can be both read from and written to
+    //   Not Present: The page table is not present
+    page_directory[i] = 0x00000002;
     }
-}
-
-// Function to create a new PTE with default values
-static PTE create_pte() {
-    PTE pte = {0};
-    return pte;
-}
-
-// Function to set a PTE with specific values
-static void set_pte(PTE *pte, uint32_t frame, uint8_t present, uint8_t rw, uint8_t user) {
-    if (pte != NULL) {
-        pte->frame = frame >> 12;  // Assume frame address is page aligned
-        pte->present = present;
-        pte->rw = rw;
-        pte->user = user;
-    }
-}
-
-static PDE PD[1024];
-
-
-void initializePD(){
-    for (int i = 0; i < 1024; i++)
+ 
+    //we will fill all 1024 entries in the table, mapping 4 megabytes
+    for(unsigned int i = 0; i < 1024; i++)
     {
-        PD[i] = create_pde();
+        // As the address is page aligned, it will always leave 12 bits zeroed.
+        // Those bits are used by the attributes ;)
+        first_page_table[i] = (i * 0x1000) | 3; // attributes: supervisor level, read/write, present.
     }
-    load_page_directory(PD);
+
+    page_directory[0] = ((unsigned int)first_page_table) | 3;
+
+    loadPageDirectory(page_directory);
+    enablePaging();
 }
+

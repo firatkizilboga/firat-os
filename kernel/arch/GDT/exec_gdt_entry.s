@@ -3,7 +3,8 @@
 ; void __attribute__((cdecl)) i686_GDT_Load(GDTDescriptor* descriptor, uint16_t codeSegment, uint16_t dataSegment);
 section .text
     global i686_GDT_Load
-    global load_page_directory
+    global loadPageDirectory
+    global enablePaging
 
 i686_GDT_Load:
     
@@ -37,18 +38,32 @@ i686_GDT_Load:
     ret
 
 
-load_page_directory:
+loadPageDirectory:
 
-    push ebp             ; Save old base pointer
-    mov ebp, esp         ; Set new base pointer
+    ; make new call frame
+    push ebp             ; save old call frame
+    mov ebp, esp         ; initialize new call frame
 
-    mov eax, [ebp + 8]   ; Get the page directory address from the stack
-    mov cr3, eax         ; Load the page directory address into CR3
+    ; load page directory
+    mov eax, [ebp + 8]
+    mov cr3, eax         ; set CR3 register to the new page directory address
 
-    ; Enable paging by setting the PG bit (bit 31) of CR0
+    ; restore call frame and return
+    mov esp, ebp
+    pop ebp
+    ret
+enablePaging:
+
+    ; make new call frame
+    push ebp             ; save old call frame
+    mov ebp, esp         ; initialize new call frame
+
+    ; enable paging
     mov eax, cr0
-    or eax, 0x80000000
+    or eax, 0x80000000   ; set the paging bit in CR0
     mov cr0, eax
 
-    pop ebp              ; Restore old base pointer
-    ret                  ; Return to caller
+    ; restore call frame and return
+    mov esp, ebp
+    pop ebp
+    ret

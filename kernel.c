@@ -54,6 +54,8 @@ void kernel_main(void) {
     i686_IDT_EnableGate(8);
     i686_IDT_SetGate(8, handlePageFault, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
     
+    initPaging();
+
 
     enableInterrupts();
     terminal();
