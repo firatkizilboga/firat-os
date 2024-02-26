@@ -128,6 +128,8 @@ void terminal_initialize(void)
 void terminal(){
 	//write \0 to data_buffer and input_buffer
 	terminal_initialize();
+    initializePD();
+
 	while (1)
 	{}
 }

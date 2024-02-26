@@ -11,7 +11,7 @@
 #include <keypress.h>
 #include <editor.h>
 #include <timer.h>
-
+#include <pdpt.h>
 #define PIC1_COMMAND 0x20
 #define PIC1_DATA 0x21
 
@@ -29,6 +29,15 @@ void disable_timer_interrupt() {
 }
 
 
+void handlePageFault(){
+  disableInterrupts();
+  Cursor* c = getCurrentCursor();
+  VGATextFrame* f = getCurrentFrame();
+  update_cursor(c,0,2);
+  printf("Page Fault!");
+  __asm__ volatile ("cli; hlt"); // Completely hangs the computer
+  enableInterrupts();
+}
 
 void kernel_main(void) {
     maskIRQ(0);
@@ -38,6 +47,14 @@ void kernel_main(void) {
     initVideo();
     initKeyboard();
 	  initTimer();
+
+    i686_IDT_EnableGate(14);
+    i686_IDT_SetGate(14, handlePageFault, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
+
+    i686_IDT_EnableGate(8);
+    i686_IDT_SetGate(8, handlePageFault, 0x08, IDT_FLAG_PRESENT | IDT_FLAG_GATE_32BIT_INT);
+    
+
     enableInterrupts();
     terminal();
 }

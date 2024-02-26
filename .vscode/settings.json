@@ -15,7 +15,8 @@
         "video.h": "c",
         "keypress.h": "c",
         "utils.h": "c",
-        "editor.h": "c"
+        "editor.h": "c",
+        "page_descriptors.C": "cpp"
     },
     "code-runner.executorMap": {
         "shellscript": "./kill_qemu_and_make.sh"
