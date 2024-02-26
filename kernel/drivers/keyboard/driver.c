@@ -3,13 +3,11 @@
 #include "keyboard.h"
 #include "stdbool.h"
 #include "stdint.h"
-
 #include <stddef.h>
-#define PIC1_COMMAND 0x20
 #define KEYBOARD_DATA_PORT 0x60
 
-bool capsOn;
-bool capsLock;
+static bool capsOn;
+static bool capsLock;
 
 const uint32_t lowercase[128] = {
     NULL, NULL, '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9',  '0',

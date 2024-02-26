@@ -45,12 +45,12 @@ void i686_IDT_SetGate(int interrupt, void* base, uint16_t segmentDescriptor, uin
     g_IDT[interrupt].BaseHigh = ((uint32_t)base >> 16) & 0xFFFF;
 }
 
-void i686_IDT_EnableGate(int interrupt)
+inline void i686_IDT_EnableGate(int interrupt)
 {
     FLAG_SET(g_IDT[interrupt].Flags, IDT_FLAG_PRESENT);
 }
 
-void i686_IDT_DisableGate(int interrupt)
+inline void i686_IDT_DisableGate(int interrupt)
 {
     FLAG_UNSET(g_IDT[interrupt].Flags, IDT_FLAG_PRESENT);
 }
@@ -93,7 +93,7 @@ void PIC_remap(int offset1, int offset2) {
     outb(PIC2_DATA, a2);
 }
 
-void PIC_sendEOI(unsigned char irq) {
+inline void PIC_sendEOI(unsigned char irq) {
     if (irq >= 8)
         outb(PIC2_COMMAND, PIC_EOI);
 
@@ -134,15 +134,15 @@ void unmaskIRQ(unsigned char IRQ) {
     outb(port, value);
 }
 
-void enableInterrupts(){
+inline void enableInterrupts(){
     __asm__ __volatile__("sti");
 }
 
-void disableInterrupts(){
+inline void disableInterrupts(){
     __asm__ __volatile__("cli");
 }
 
-void disableAllInterruptGates(){
+inline void disableAllInterruptGates(){
     for (int i = 0; i < 256; i++)
     {
         i686_IDT_DisableGate(i);

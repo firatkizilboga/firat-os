@@ -106,17 +106,15 @@ void render_terminal(){
 		write_string(data_buffer[i], &terminal_cursor, &frame);
 	}
 	update_cursor(&terminal_cursor, 0, 24);
-	write_string(">>>", &terminal_cursor, &frame);
+	write_string(">>> ", &terminal_cursor, &frame);
 	if (input_buffer_index)
 	{
-
 		write_string(input_buffer, &terminal_cursor, &frame);
 	}
 	while(terminal_cursor.x < VGA_WIDTH)
 	{
 		write_char(' ', &terminal_cursor, &frame);
 	}
-	videoInterruptHandler();
 }
 
 void terminal_initialize(void) 
