@@ -10,6 +10,7 @@
 #include "utils.h"
 #include "terminal.h"
 #include "editor.h"
+#include "timer.h"
 
 static void keyboardCallback(KeyStroke ks);
 Cursor terminal_cursor = {0, 2, false};
@@ -24,7 +25,6 @@ void terminal_clear()
 {
 	terminal_cursor.x = VGA_WIDTH/2;
 	terminal_cursor.y = VGA_HEIGHT/2;
-	printf("LALALALA");
 	terminal_cursor.x = 0;
 	terminal_cursor.y = 2;
 	terminal_cursor.is_blinking = false;
@@ -56,8 +56,6 @@ void clearBuffers()
 }
 
 static void keyboardCallback(KeyStroke ks){
-	
-
 	if (ks.keyReleased)
 		return;
 	
@@ -102,10 +100,10 @@ static void keyboardCallback(KeyStroke ks){
 	render_terminal();
 };
 
-render_terminal(){
+void render_terminal(){
 	setKeyboardCallback(&keyboardCallback);
 	requestVideoOut(&frame, &terminal_cursor);
-	frameFill(&frame, VGA_COLOR_BLACK,VGA_COLOR_GREEN);
+	frameFill(&frame, VGA_COLOR_BLACK, VGA_COLOR_GREEN);
 	update_cursor(&terminal_cursor, 0, 2);
 	for (int i = 0; i < 20; i++){
 		if (data_buffer[i][0] == '\0')
@@ -114,6 +112,7 @@ render_terminal(){
 	}
 	update_cursor(&terminal_cursor, 0, 24);
 	write_string(isProtectedMode() ? "protected>" : "real> ", &terminal_cursor, &frame);
+	printf("%d", getTicks());
 	if (input_buffer_index)
 	{
 
@@ -123,7 +122,6 @@ render_terminal(){
 	{
 		write_char(' ', &terminal_cursor, &frame);
 	}
-	
 	videoInterruptHandler();
 }
 

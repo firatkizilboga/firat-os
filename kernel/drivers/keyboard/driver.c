@@ -76,7 +76,7 @@ void keyboardHandler() {
       }
     }
   }
-  outb(0x20, PIC1_COMMAND);
+  PIC_sendEOI(0x21);
   enableInterrupts();
   KeyStroke keyStroke = {scanCode, keyReleased, keyToPrint, keyCode};
   keyboardCallback(keyStroke);

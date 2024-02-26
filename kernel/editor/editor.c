@@ -19,7 +19,6 @@ static void clear() {
 static void render() {
   clear();
   write_string(buffer, &cursor, &frame);
-  videoInterruptHandler();
 }
 
 static void keyboardCallback(KeyStroke ks) {

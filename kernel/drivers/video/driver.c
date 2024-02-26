@@ -15,23 +15,26 @@ void requestVideoOut(VGATextFrame *inc_frame, Cursor *inc_cursor) {
 };
 
 uint16_t *vga_buffer;
-void initVideo() { vga_buffer = (uint16_t *)0xB8000; }
+void initVideo() { 
+  vga_buffer = (uint16_t *)0xB8000;
+  frameFill(current_frame, VGA_COLOR_BLACK, VGA_COLOR_WHITE);
+}
+
+inline void displayPixel(Pixel p, int y, int x) {
+  uint16_t pos = y * VGA_WIDTH + x;
+  uint8_t color = vga_entry_color(p.foreground_color, p.background_color);
+  vga_buffer[pos] = vga_entry(p.ASCII, color);
+}
+
 
 void videoInterruptHandler() {
-  disableInterrupts();
   for (int i = 0; i < VGA_HEIGHT; i++) {
     for (int j = 0; j < VGA_WIDTH; j++) {
       displayPixel(current_frame->buffer[i][j], i, j);
     }
   }
-  enableInterrupts();
 }
 
-void displayPixel(Pixel p, int y, int x) {
-  uint16_t pos = y * VGA_WIDTH + x;
-  uint8_t color = vga_entry_color(p.foreground_color, p.background_color);
-  vga_buffer[pos] = vga_entry(p.ASCII, color);
-}
 
 void update_cursor(Cursor *c, int x, int y) {
   // set start y from 2s to 25
@@ -74,8 +77,7 @@ void write_string(char *str, Cursor *cursor, VGATextFrame *frame) {
     write_char(str[i], cursor, frame);
 }
 
-void frameFill(VGATextFrame *frame, uint8_t background_color,
-               uint8_t foreground_color) {
+void frameFill(VGATextFrame *frame, uint8_t background_color, uint8_t foreground_color) {
 
   for (int i = 0; i < VGA_HEIGHT; i++) {
     for (int j = 0; j < VGA_WIDTH; j++) {
