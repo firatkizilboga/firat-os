@@ -16,7 +16,8 @@
         "keypress.h": "c",
         "utils.h": "c",
         "editor.h": "c",
-        "page_descriptors.C": "cpp"
+        "page_descriptors.C": "cpp",
+        "liballoc.h": "c"
     },
     "code-runner.executorMap": {
         "shellscript": "./kill_qemu_and_make.sh"

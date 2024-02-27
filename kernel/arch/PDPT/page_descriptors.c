@@ -62,21 +62,10 @@ static void set_pte(PTE *pte, uint32_t frame, uint8_t present, uint8_t rw, uint8
 }
 
 
-static PDE PD[1024] __attribute__((aligned(4096))) ;
-static PTE firstPT[1024] __attribute__((aligned(4096))) ;
+PDE PD[1024] __attribute__((aligned(4096))) ;
+PTE firstPT[1024] __attribute__((aligned(4096))) ;
 
 void initPaging(){
-    for (int i = 0; i < 1024; i++)
-    {
-        PD[i] = create_pde();
-    }
-    
-    for (int i = 0; i < 1024; i++)
-    {
-        PTE tmp = create_pte();
-        set_pte(&tmp, i * 0x1000, 1, 1, 0);
-        firstPT[i] = tmp;
-    }
-    set_pde(&PD[0], firstPT, 1, 1, 0);
     loadPageDirectory(PD);
 }
+
