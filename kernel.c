@@ -29,6 +29,7 @@ void disable_timer_interrupt() {
 }
 
 
+extern void mark_kernel_memory();
 
 void kernel_main(void) {
     maskIRQ(0);
@@ -39,5 +40,6 @@ void kernel_main(void) {
     initKeyboard();
 	  initTimer();
     enableInterrupts();
+    mark_kernel_memory();
     terminal();
 }

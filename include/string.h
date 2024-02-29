@@ -16,6 +16,7 @@ void* memset(void*, int, size_t);
 size_t strlen(const char*);
 int atoi(const char*);
 char* itoa(int, char*, int);
+char* strcpy(char* destination, const char* source);
 
 #ifdef __cplusplus
 }

@@ -15,7 +15,10 @@
         "video.h": "c",
         "keypress.h": "c",
         "utils.h": "c",
-        "editor.h": "c"
+        "editor.h": "c",
+        "__bit_reference": "c",
+        "bitset": "c",
+        "unordered_map": "c"
     },
     "code-runner.executorMap": {
         "shellscript": "./kill_qemu_and_make.sh"
