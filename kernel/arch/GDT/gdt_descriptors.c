@@ -1,5 +1,5 @@
 #pragma once
-#include "gdt.h"
+#include <gdt.h>
 #include <stdint.h>
 
 typedef struct

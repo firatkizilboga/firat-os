@@ -1,8 +1,8 @@
 #pragma once
-#include "idt.h"
-#include "keyboard.h"
-#include "stdbool.h"
-#include "stdint.h"
+#include <idt.h>
+#include <keyboard.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <stddef.h>
 #define KEYBOARD_DATA_PORT 0x60
 

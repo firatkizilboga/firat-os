@@ -1,6 +1,5 @@
 #include <string.h>
-
-char* strcpy(char* destination, const char* source){
+char * strcpy(char* destination, const char* source){
     *destination = *source;
     if (*source == '\0')
     {

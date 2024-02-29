@@ -1,8 +1,8 @@
-#include "gdt.h"
-#include "idt.h"
-#include "keyboard.h"
-#include "terminal.h"
-#include "video.h"
+#include <gdt.h>
+#include <idt.h>
+#include <keyboard.h>
+#include <terminal.h>
+#include <video.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -39,7 +39,7 @@ void kernel_main(void) {
     initVideo();
     initKeyboard();
 	  initTimer();
-    enableInterrupts();
     mark_kernel_memory();
+    enableInterrupts();
     terminal();
 }

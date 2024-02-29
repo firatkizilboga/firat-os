@@ -10,9 +10,16 @@ static int bitmap[TOTAL_MEMORY_BLOCKS] = {0};
 extern char kernel_start[]; // Defined by linker script
 extern char kernel_end[];   // Defined by linker script
 
-size_t address_to_index(uintptr_t address) {
+static size_t address_to_index(uintptr_t address) {
     return (address - (uintptr_t)kernel_start) / BLOCK_SIZE;
 }
+
+static mark_memory_range_as_used(int start, int end){
+    for (size_t i = start; i <= end; i++)
+    {
+        bitmap[i] = 1;
+    }
+};
 
 void mark_kernel_memory() {
     uintptr_t start = (uintptr_t)kernel_start;
@@ -22,25 +29,20 @@ void mark_kernel_memory() {
     mark_memory_range_as_used(start, end);
 }
 
-mark_memory_range_as_used(int start, int end){
-    for (size_t i = start; i <= end; i++)
-    {
-        bitmap[i] = 1;
-    }
-};
 
-mark_memory_range_as_free(int start, int end){
+
+static mark_memory_range_as_free(int start, int end){
     for (size_t i = start; i <= end; i++)
     {
         bitmap[i] = 0;
     }
 };
 
-uintptr_t index_to_address(size_t index) {
+static uintptr_t index_to_address(size_t index) {
     return (uintptr_t)kernel_start + index * BLOCK_SIZE;
 }
 
-void* allocate_chunks(int chunk_amt) {
+static void* allocate_chunks(int chunk_amt) {
     for (int end = TOTAL_MEMORY_BLOCKS - 1; end >= chunk_amt; end--) {
         bool isFree = true;
         int start = end - chunk_amt + 1;

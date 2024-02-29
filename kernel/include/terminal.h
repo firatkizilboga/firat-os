@@ -3,7 +3,7 @@
 #define TERMINAL_H 1
 
 #include <stdint.h> // For standard integer types
-#include "video.h"
+#include <video.h>
 
 // Structure representing a GDT entry
 

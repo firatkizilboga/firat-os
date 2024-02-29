@@ -17,6 +17,8 @@ def get_dependencies(lib):
         info = json.load(info_file)
     return info["dependencies"]
 
+includes = ""
+
 def main():
     #delete all .o and .bin files in the current directory and all subdirectories
     os.system("find . -name '*.o' -type f -delete")
@@ -29,24 +31,19 @@ def main():
     object_files = []
 
     for lib in libraries:
+        get_include_string(lib)
+
+    for lib in libraries:
         objs = build_lib(lib)
         object_files.extend(objs)
 
-
-    #get includes for all the libraries
-    includes = "./include"
-
-    os.system("i686-elf-gcc -c kernel.c -o build/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra -I" + includes)
+    os.system("i686-elf-gcc -c kernel.c -o build/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra " + includes)
     object_files_str = " ".join(object_files)
     os.system("i686-elf-gcc -T linker.ld -o build/kernel.bin -ffreestanding -O2 -nostdlib build/boot.o build/kernel.o " + object_files_str)
 
 def get_include_string(lib):
-    dependencies = get_dependencies(lib)
-    includes = ""
-    for dep in dependencies:
-        includes += " -I" + dep + "/include"
-    includes += " -I" + lib + "/include"
-    return includes
+    global includes
+    includes += "  -I" + lib + "/include "
 
 def get_file_name(path):
     return path.split("/")[-1]
@@ -73,7 +70,7 @@ def build_lib(lib):
         name = identifier + get_file_name(c_file).replace(".c", ".o")
         build_location = BUILD_DIR + name
 
-        os.system("i686-elf-gcc -c " + c_file + " -o " +  build_location + " -std=gnu99 -ffreestanding -O2 -w -Wall -Wextra -I./include")
+        os.system("i686-elf-gcc -c " + c_file + " -o " +  build_location + " -std=gnu99 -ffreestanding -O2 -w -Wall -Wextra " + includes)
         obj_names.append(build_location)
 
     for asm_file in asm_files:

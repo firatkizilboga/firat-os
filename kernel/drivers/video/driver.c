@@ -1,5 +1,5 @@
 #pragma once
-#include "video.h"
+#include <video.h>
 #include <stdbool.h>
 
 Cursor *current_cursor;

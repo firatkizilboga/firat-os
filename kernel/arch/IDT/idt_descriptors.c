@@ -1,5 +1,5 @@
 #pragma once
-#include "idt.h"
+#include <idt.h>
 #include <stdint.h>
 #define FLAG_SET(x, flag) x |= (flag)
 #define FLAG_UNSET(x, flag) x &= ~(flag)

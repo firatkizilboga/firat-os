@@ -4,13 +4,13 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
-#include "video.h"
-#include "keyboard.h"
-#include "keypress.h"
-#include "utils.h"
-#include "terminal.h"
-#include "editor.h"
-#include "timer.h"
+#include <video.h>
+#include <keyboard.h>
+#include <keypress.h>
+#include <utils.h>
+#include <terminal.h>
+#include <editor.h>
+#include <timer.h>
 
 static void keyboardCallback(KeyStroke ks);
 Cursor terminal_cursor = {0, 2, false};
