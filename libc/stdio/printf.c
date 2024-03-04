@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <video.h>
 
 static bool print(const char *data, size_t length) {
   const unsigned char *bytes = (const unsigned char *)data;

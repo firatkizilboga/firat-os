@@ -18,7 +18,9 @@
         "editor.h": "c",
         "__bit_reference": "c",
         "bitset": "c",
-        "unordered_map": "c"
+        "unordered_map": "c",
+        "syscalls.h": "c",
+        "memory.h": "c"
     },
     "code-runner.executorMap": {
         "shellscript": "./kill_qemu_and_make.sh"

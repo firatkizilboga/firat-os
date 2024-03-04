@@ -31,7 +31,7 @@ void mark_kernel_memory() {
 
 
 
-static mark_memory_range_as_free(int start, int end){
+void mark_memory_range_as_free(int start, int end){
     for (size_t i = start; i <= end; i++)
     {
         bitmap[i] = 0;
@@ -42,7 +42,7 @@ static uintptr_t index_to_address(size_t index) {
     return (uintptr_t)kernel_start + index * BLOCK_SIZE;
 }
 
-static void* allocate_chunks(int chunk_amt) {
+void* allocate_chunks(int chunk_amt) {
     for (int end = TOTAL_MEMORY_BLOCKS - 1; end >= chunk_amt; end--) {
         bool isFree = true;
         int start = end - chunk_amt + 1;
@@ -62,26 +62,3 @@ static void* allocate_chunks(int chunk_amt) {
     return NULL; // No suitable range found
 }
 
-void* malloc(size_t size) {
-    if (size == 0) {
-        return NULL;
-    }
-
-    int chunk_amt = (size + sizeof(int) + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    return allocate_chunks(chunk_amt);
-}
-
-void free(void* ptr) {
-    if (ptr == NULL) {
-        return;
-    }
-
-    // Get the address where the size is stored (one int before the given pointer)
-    int* size_ptr = (int*)ptr - 1;
-    int chunk_amt = *size_ptr;
-
-    // Calculate the starting block index
-    uintptr_t address = (uintptr_t)size_ptr;
-    int start = address_to_index(address);
-    mark_memory_range_as_free(start, start + chunk_amt);
-}
